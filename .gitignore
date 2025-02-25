@@ -1,0 +1,41 @@
+# Node.js dependencies
+/node_modules/
+**/node_modules/
+
+# Temporary files and build outputs
+dist/
+coverage/
+temp/
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# pnpm workspace
+pnpm-lock.yaml
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# ESLint & Prettier cache
+.eslintcache
+.prettierignore
+
+# Docker files
+docker-volume-data/
+dump/
+
+# TypeScript build output
+*.js
+*.d.ts
+*.map
+
+# Generated GraphQL Types
+/apps/backend/src/graphql/generated/

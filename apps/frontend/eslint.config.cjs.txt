@@ -1,0 +1,12 @@
+module.exports = {
+  extends: ['../../.eslintrc.cjs', 'plugin:react-hooks/recommended', 'next/core-web-vitals'],
+  env: {
+    browser: true,
+  },
+  plugins: ['react-hooks'],
+  rules: {
+    'react/react-in-jsx-scope': 'off', // Next.js does not require importing React
+    'react/jsx-boolean-value': ['error', 'never'],
+    'react/jsx-curly-brace-presence': ['error', { props: 'never' }],
+  },
+};

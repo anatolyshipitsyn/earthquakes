@@ -1,0 +1,66 @@
+version: '3.8'
+x-dbRunVars: &dbRunVars
+  POSTGRES_USER: ${POSTGRES_USER:-admin}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+  POSTGRES_DB: ${POSTGRES_DB:-api_db}
+  POSTGRES_HOST: ${POSTGRES_HOST:-db}
+  POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+  WEB_APP_URL: ${WEB_APP_URL:-http://localhost:3000}
+  ALLOW_NOSSL: true
+
+x-redisRunVars: &redisRunVars
+  REDIS_HOST: ${REDIS_HOST:-redis}
+  REDIS_PORT: ${REDIS_PORT:-6379}
+  REDIS_PASSWORD: ${REDIS_PASSWORD:-redisSecret}
+
+x-apiRunVars: &apiRunVars
+  <<: [*redisRunVars, *dbRunVars]
+  NODE_ENV: development
+
+services:
+  api:
+    container_name: earthquakes-api
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+      target: build
+    restart: always
+    environment: *apiRunVars
+    ports:
+      - "4000:4000"
+    command: ["pnpm", "run", "dev"]
+    volumes:
+      - ./:/usr/src/app:consistent
+      - /usr/src/app/node_modules
+    depends_on:
+      - db
+      - redis
+    links:
+      - db
+    extra_hosts:
+      - "${PDF_SERVICE_HOST:-pdf-service-host}:host-gateway"
+
+  db:
+    container_name: earthquakes-db
+    image: postgres:13-alpine
+    restart: always
+    environment: *dbRunVars
+    volumes:
+      - db_data:/var/lib/postgresql/data/
+      - ./dump:/dump
+    ports:
+      - "5432:5432"
+
+  redis:
+    container_name: earthquakes-redis
+    image: redis:7-alpine
+    environment: *redisRunVars
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redisSecret}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  db_data:
+  redis_data:

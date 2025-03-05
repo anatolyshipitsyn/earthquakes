@@ -8,6 +8,8 @@ This is a **monorepo application** with:
 - **Frontend**: React + Next.js.
 - **Package Manager**: **pnpm**.
 
+![Catalog Overview](docs/catalog.png)
+
 ---
 
 ## Prerequisites

@@ -1,15 +1,22 @@
 import { gql } from 'apollo-server-express';
+import {
+  commonTypeDefs,
+  EarthquakeUpdateInput,
+} from 'graphql-common/src/types';
 
 export const typeDefs = gql`
-  type Earthquake {
-    id: ID!
-    location: String!
-    magnitude: Float!
-    date: String!
+  ${commonTypeDefs}
+  ${EarthquakeUpdateInput}
+
+  type EarthquakeResponse {
+    data: [Earthquake!]!
+    success: Boolean!
+    total: Int!
   }
 
   type Query {
-    earthquakes: [Earthquake]
+    earthquakes(pageSize: Int!, current: Int!): EarthquakeResponse!
+    earthquake(id: ID!): Earthquake
   }
 
   type Mutation {
@@ -18,5 +25,7 @@ export const typeDefs = gql`
       magnitude: Float!
       date: String!
     ): Earthquake
+    updateEarthquake(id: ID!, data: EarthquakeUpdateInput!): Earthquake
+    deleteEarthquake(id: ID!): String
   }
 `;

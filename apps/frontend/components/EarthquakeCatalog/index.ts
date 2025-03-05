@@ -1,0 +1,1 @@
+export { EarthquakeCatalog } from './EarthquakeCatalog';

@@ -8,16 +8,16 @@ import { Base } from '@/database/entity/Base';
 @Index('idx_name', ['location'])
 export class Earthquake extends Base {
   @IsString()
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Column({ type: 'varchar', length: 255 })
   public location!: string;
 
   @IsNumber({ allowInfinity: false, allowNaN: false, maxDecimalPlaces: 15 })
-  @Column({ type: 'float', nullable: true })
-  public magnitude!: number | null;
+  @Column({ type: 'float' })
+  public magnitude!: number;
 
   @IsOptional()
   @IsDate()
   @Type(() => Date)
-  @Column({ type: 'timestamp', nullable: true })
-  date?: Date;
+  @Column({ type: 'timestamp' })
+  public date!: Date;
 }

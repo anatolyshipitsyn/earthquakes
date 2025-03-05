@@ -1,27 +1,48 @@
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import express from 'express';
 
-import { resolvers } from '@/graphql/resolvers';
+import { getDataSource } from '@/database/data-source';
+import { earthquakeResolvers } from '@/graphql/resolvers';
 import { typeDefs } from '@/graphql/schema';
+import { Logger } from '@/utils/logger';
 
+async function initializeDatabase(): Promise<void> {
+  try {
+    await getDataSource();
+    Logger.log('Database initialized successfully.');
+  } catch (error) {
+    Logger.error('Database initialization error:', error);
+    process.exit(1);
+  }
+}
+
+function configureMiddleware(
+  app: express.Application,
+  server: ApolloServer
+): void {
+  app.use('/graphql', cors(), bodyParser.json(), expressMiddleware(server));
+}
 
 async function startServer() {
+  await initializeDatabase();
+
   const app = express();
-  const server = new ApolloServer({
+  const apolloServer = new ApolloServer({
     typeDefs,
-    resolvers,
+    resolvers: earthquakeResolvers,
   });
 
-  await server.start();
-  app.use('/graphql', bodyParser.json(), expressMiddleware(server));
+  await apolloServer.start();
+  configureMiddleware(app, apolloServer);
 
   app.listen({ port: 4000 }, () => {
-    console.log(`🚀 Server ready at http://localhost:4000/graphql`);
+    Logger.log(`🚀 Server ready at http://localhost:4000/graphql`);
   });
 }
 
 startServer().catch((error) => {
-  console.error('Error starting server:', error);
+  Logger.error('Error starting server:', error);
 });

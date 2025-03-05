@@ -3,10 +3,12 @@
   "compilerOptions": {
     "target": "ES2021",
     "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "./dist",
     "rootDir": "./src",
     "baseUrl": "./src",
     "paths": {
+      "graphql-common": ["../packages/graphql-common/src"],
       "@/*": ["*"]
     },
     "experimentalDecorators": true,

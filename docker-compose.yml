@@ -17,6 +17,11 @@ x-apiRunVars: &apiRunVars
   <<: [*redisRunVars, *dbRunVars]
   NODE_ENV: development
 
+x-frontendRunVars: &frontendRunVars
+  NODE_ENV: development
+  NEXT_PUBLIC_API_URL: "http://api.lvh.me:4000/graphql"
+#  DEBUG: "*"
+
 services:
   api:
     container_name: earthquakes-api
@@ -28,17 +33,38 @@ services:
     environment: *apiRunVars
     ports:
       - "4000:4000"
-    command: ["pnpm", "run", "dev"]
+    command: ["pnpm", "--filter=backend", "run", "dev"]
     volumes:
       - ./:/usr/src/app:consistent
       - /usr/src/app/node_modules
+      - /usr/src/app/apps/backend/node_modules
     depends_on:
       - db
       - redis
     links:
       - db
     extra_hosts:
-      - "${PDF_SERVICE_HOST:-pdf-service-host}:host-gateway"
+      - "api.lvh.me:host-gateway"
+
+  frontend:
+    container_name: earthquakes-frontend
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      target: base
+#    restart: always
+    ports:
+      - "3000:3000"
+    environment: *frontendRunVars
+    extra_hosts:
+      - "earthquakes.lvh.me:host-gateway"
+    volumes:
+      - ./:/usr/src/app:consistent
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/frontend/node_modules
+    depends_on:
+      - api
+    command: ["pnpm", "--filter=frontend", "run", "dev"]
 
   db:
     container_name: earthquakes-db
@@ -47,7 +73,7 @@ services:
     environment: *dbRunVars
     volumes:
       - db_data:/var/lib/postgresql/data/
-      - ./dump:/dump
+#      - ./dump:/dump
     ports:
       - "5432:5432"
 

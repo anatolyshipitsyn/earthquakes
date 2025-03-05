@@ -1,75 +1,105 @@
 # Earthquakes Application
 
 ## Overview
-This is a monorepo-based application with a **backend** (Node.js + TypeScript + GraphQL) and a **frontend** (React + Next.js). The project uses **pnpm** for package management.
+
+This is a **monorepo application** with:
+
+- **Backend**: Node.js + TypeScript + GraphQL.
+- **Frontend**: React + Next.js.
+- **Package Manager**: **pnpm**.
+
+---
 
 ## Prerequisites
-Before running the application, ensure you have the correct environment set up:
 
-- **Node.js**: `20.16.0` (specified in `.nvmrc`)
-- **pnpm**: `Latest version` (install via `npm install -g pnpm`)
-- **Database**: (Specify the database used, e.g., PostgreSQL, MongoDB)
-- **Docker** (optional for running the database in a container)
+Ensure the following tools are installed before proceeding:
+
+- **Node.js**: `20.16.0` (specified in `.nvmrc` file).
+- **pnpm**: Latest version (`npm install -g pnpm`).
+- **Docker** (for containerized environments).
 
 ---
 
 ## Setup Instructions
 
 ### 1. Clone the Repository
-```sh
-git clone <repository-url>
-cd earthquakes
+
+```bash
+git clone <repository-url> && cd earthquakes
 ```
 
 ### 2. Install Dependencies
-Use `pnpm` to install all dependencies across workspaces:
-```sh
+
+Install the required dependencies for all applications using `pnpm`:
+
+```bash
 pnpm install
 ```
 
 ### 3. Set Up Environment Variables
-Create a `.env` file in the `apps/backend/` directory with the required environment variables. Example:
 
-```ini
-PORT=4000
-DATABASE_URL=<your-database-url>
-NODE_ENV=development
+Environment variables must be configured for each application. Copy the provided `.env.example` files and populate them:
+
+```bash
+cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.example apps/frontend/.env
 ```
+
+**Note**: Populate placeholders in the `.env` files with environment-specific values (e.g., database credentials, API
+keys).
 
 ---
 
 ## Running the Application
 
-### Backend (GraphQL API)
-Start the backend in development mode:
-```sh
+There are two ways to start the application:
+
+### Option A: Using Docker
+
+Launch the application in a fully containerized environment:
+
+```bash
+docker compose up --build -d
+```
+
+### Option B: Manual Start
+
+#### Start the Backend (GraphQL API)
+
+Run the following commands to start the backend in development mode:
+
+```bash
 cd apps/backend
 pnpm dev
 ```
-The API will be available at `http://localhost:4000/graphql`.
 
-### Frontend (React + Next.js)
-Start the frontend:
-```sh
+The API will be available at: **http://localhost:4000/graphql**
+
+#### Start the Frontend (React + Next.js)
+
+Run the following commands to start the frontend:
+
+```bash
 cd apps/frontend
 pnpm dev
 ```
-The frontend will be available at `http://localhost:3000`.
+
+The application will be available at: **http://localhost:3000**
 
 ---
 
 ## Database Setup
 
-### 1. Run Migrations
-If using a database, apply migrations with:
-```sh
+### Apply Migrations
+
+```bash
 pnpm run migrate
 ```
 
-### 2. Seed the Database
-To populate the database with initial data:
-```sh
-pnpm run seed
+### Generate New Migrations
+
+```bash
+pnpm generate-migration src/database/migrations/NewMigrationName
 ```
 
 ---
@@ -95,13 +125,16 @@ pnpm prettier --write .
 
 ---
 
-## Building & Running in Production
-To build the application:
+## Building & Production
+
+### Build the Application
+
 ```sh
 pnpm build
 ```
 
-To start in production:
+### Start in Production
+
 ```sh
 pnpm start
 ```

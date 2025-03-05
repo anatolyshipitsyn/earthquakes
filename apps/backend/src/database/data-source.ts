@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-import { typeormConfig } from '../configs/typeorm';
+import { typeormConfig } from '@/configs/typeorm';
 
 import { Earthquake } from './entity/EarthquakeEntity';
 

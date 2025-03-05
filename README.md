@@ -27,7 +27,7 @@ Ensure the following tools are installed before proceeding:
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url> && cd earthquakes
+git clone git@github.com:anatolyshipitsyn/earthquakes.git && cd earthquakes
 ```
 
 ### 2. Install Dependencies
@@ -156,7 +156,3 @@ pnpm start
 ---
 
 This document provides a structured way to get started with the application. Let me know if you need further customization! 🚀
-
-
-
-pnpm exec ts-node ./node_modules/.bin/typeorm migration:generate -d ./src/database/data-source.ts ./src/database/migrations/AddEarthquake

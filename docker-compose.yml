@@ -16,6 +16,7 @@ x-redisRunVars: &redisRunVars
 x-apiRunVars: &apiRunVars
   <<: [*redisRunVars, *dbRunVars]
   NODE_ENV: development
+#  DEBUG: "*"
 
 x-frontendRunVars: &frontendRunVars
   NODE_ENV: development

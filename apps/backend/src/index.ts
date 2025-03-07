@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 
+import { validationResult } from '@/configs';
 import { getDataSource } from '@/database/data-source';
 import { earthquakeResolvers } from '@/graphql/resolvers';
 import { typeDefs } from '@/graphql/schema';
@@ -27,6 +28,12 @@ function configureMiddleware(
 }
 
 async function startServer() {
+  if (validationResult.error) {
+    throw new Error(
+      `Config validation error: ${validationResult.error.message}`
+    );
+  }
+
   await initializeDatabase();
 
   const app = express();

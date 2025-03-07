@@ -5,10 +5,9 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "./dist",
-    "rootDir": "./src",
     "baseUrl": "./src",
     "paths": {
-      "graphql-common": ["../packages/graphql-common/src"],
+      "graphql-common/*": ["../../packages/graphql-common/src/*"],
       "@/*": ["*"]
     },
     "experimentalDecorators": true,

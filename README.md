@@ -64,26 +64,32 @@ Launch the application in a fully containerized environment:
 docker compose up --build -d
 ```
 
+
 ### Option B: Manual Start
 
-#### Start the Backend (GraphQL API)
+#### 1. Start Database and Redis
+Make sure the required services (database and Redis) are running locally.
 
-Run the following commands to start the backend in development mode:
-
+Alternatively, you can start them using Docker:
 ```bash
-cd apps/backend
-pnpm dev
+docker-compose up db redis
 ```
 
-The API will be available at: **http://localhost:4000/graphql**
-
-#### Start the Frontend (React + Next.js)
-
-Run the following commands to start the frontend:
+#### 2. Start the Backend (GraphQL API)
+Set up environment variables and run the following commands:
 
 ```bash
-cd apps/frontend
-pnpm dev
+nvm use
+pnpm --filter=backend run dev
+```
+
+#### Start the Frontend
+
+Set up environment variables and run the following commands:
+
+```bash
+nvm use
+nvm use && pnpm --filter=frontend run dev
 ```
 
 The application will be available at: **http://localhost:3000**

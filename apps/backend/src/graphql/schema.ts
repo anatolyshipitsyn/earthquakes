@@ -1,8 +1,5 @@
 import { gql } from 'apollo-server-express';
-import {
-  commonTypeDefs,
-  EarthquakeUpdateInput,
-} from 'graphql-common/src/types';
+import { commonTypeDefs, EarthquakeUpdateInput } from 'graphql-common';
 
 export const typeDefs = gql`
   ${commonTypeDefs}

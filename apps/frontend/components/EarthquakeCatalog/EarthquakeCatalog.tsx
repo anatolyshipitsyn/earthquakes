@@ -7,17 +7,39 @@ import { useCallback, useRef, useState } from 'react';
 import { UpdateForm } from '@/components/EarthquakeCatalog/components/UpdateForm';
 import { Button } from 'antd';
 import { useMutation } from '@apollo/client';
-import { DELETE_EARTHQUAKE, UPDATE_EARTHQUAKE } from '@/app/graphql/mutations';
+import {
+  ADD_EARTHQUAKE,
+  DELETE_EARTHQUAKE,
+  UPDATE_EARTHQUAKE,
+} from '@/app/graphql/mutations';
 import { GET_EARTHQUAKES } from '@/app/graphql/queries';
 
 export const EarthquakeCatalog = () => {
   const actionRef = useRef<ActionType>();
-  const [updateModalOpen, handleupdateModalOpen] = useState<boolean>(false);
+  const [updateModalOpen, handleUpdateModalOpen] = useState<boolean>(false);
   const [currentRow, setCurrentRow] = useState<Earthquake>();
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 20,
     hideOnSinglePage: true,
+  });
+
+  const [addEarthquake] = useMutation(ADD_EARTHQUAKE, {
+    refetchQueries: [
+      {
+        query: GET_EARTHQUAKES,
+        variables: {
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+        },
+      },
+    ],
+    awaitRefetchQueries: true,
+    onCompleted: () => {
+      handleUpdateModalOpen(false);
+      setCurrentRow(undefined);
+      actionRef.current?.reload(); // Reload data or perform additional actions here
+    },
   });
 
   const [updateEarthquake, { loading, error }] = useMutation(
@@ -34,40 +56,36 @@ export const EarthquakeCatalog = () => {
       ],
       awaitRefetchQueries: true,
       onCompleted: () => {
-        handleupdateModalOpen(false);
+        handleUpdateModalOpen(false);
         setCurrentRow(undefined);
         actionRef.current?.reload(); // Reload data or perform additional actions here
       },
     }
   );
 
-  const [deleteEarthquake] = useMutation(
-      DELETE_EARTHQUAKE,
+  const [deleteEarthquake] = useMutation(DELETE_EARTHQUAKE, {
+    refetchQueries: [
       {
-        refetchQueries: [
-          {
-            query: GET_EARTHQUAKES,
-            variables: {
-              current: pagination.current,
-              pageSize: pagination.pageSize,
-            },
-          },
-        ],
-        awaitRefetchQueries: true,
-        onCompleted: () => {
-          handleupdateModalOpen(false);
-          setCurrentRow(undefined);
-          actionRef.current?.reload();
+        query: GET_EARTHQUAKES,
+        variables: {
+          current: pagination.current,
+          pageSize: pagination.pageSize,
         },
-      }
-  );
+      },
+    ],
+    awaitRefetchQueries: true,
+    onCompleted: () => {
+      handleUpdateModalOpen(false);
+      setCurrentRow(undefined);
+      actionRef.current?.reload();
+    },
+  });
 
   const handleDelete = async (id: number): Promise<void> => {
     if (confirm('Are you sure you want to delete this earthquake?')) {
-      deleteEarthquake({ variables: { id } });
+      await deleteEarthquake({ variables: { id } });
     }
   };
-
 
   const columns: ProColumns<Earthquake, string>[] = [
     {
@@ -87,6 +105,19 @@ export const EarthquakeCatalog = () => {
       title: 'Date',
       dataIndex: 'date',
       align: 'right',
+      render: (_: unknown, record: Earthquake) => {
+        const date = new Date(Number(record.date));
+
+        return new Intl.DateTimeFormat('en-US', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        }).format(date);
+      },
     },
     {
       title: 'Edit',
@@ -97,7 +128,7 @@ export const EarthquakeCatalog = () => {
         <a
           key="config"
           onClick={() => {
-            handleupdateModalOpen(true);
+            handleUpdateModalOpen(true);
             setCurrentRow(record);
           }}
         >
@@ -117,29 +148,41 @@ export const EarthquakeCatalog = () => {
 
   const handleSubmit = async (data: Partial<Earthquake>) => {
     try {
-      await updateEarthquake({
-        variables: {
-          id: currentRow?.id,
-          data: {
-            location: data.location,
-            magnitude: data.magnitude,
-            date: data.date,
+      if (!currentRow?.id) {
+        await addEarthquake({
+          variables: {
+            data: {
+              location: data.location,
+              magnitude: data.magnitude,
+              date: new Date(`${data.date}`).getTime().toString(),
+            },
           },
-        },
-      });
+        });
+      } else {
+        await updateEarthquake({
+          variables: {
+            id: currentRow?.id,
+            data: {
+              location: data.location,
+              magnitude: data.magnitude,
+              date: new Date(`${data.date}`).getTime().toString(),
+            },
+          },
+        });
+      }
     } catch (error) {
       throw error;
     }
   };
 
   const handleCancel = useCallback(() => {
-    handleupdateModalOpen(false);
+    handleUpdateModalOpen(false);
     setCurrentRow(undefined);
   }, []);
 
   const handleAddNew = useCallback(() => {
     setCurrentRow(undefined);
-    handleupdateModalOpen(true);
+    handleUpdateModalOpen(true);
   }, []);
 
   return (
@@ -168,7 +211,7 @@ export const EarthquakeCatalog = () => {
         onCancel={handleCancel}
         onDelete={handleDelete}
         updateModalOpen={updateModalOpen}
-        values={currentRow || {}}
+        values={currentRow}
       />
       {loading && <p>Updating...</p>}
       {error && <p>Error updating earthquake</p>}

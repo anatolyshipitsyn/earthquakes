@@ -25,6 +25,10 @@ export class EarthquakeService {
     return { data, success: true, total };
   }
 
+  async addEarthquake(data: EarthquakeData): Promise<Earthquake> {
+    return this.repository.create(data);
+  }
+
   async updateEarthquake(id: number, data: EarthquakeData) {
     return this.repository.update(id, data);
   }

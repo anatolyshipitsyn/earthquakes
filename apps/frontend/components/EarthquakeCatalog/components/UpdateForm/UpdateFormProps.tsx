@@ -7,5 +7,5 @@ export type UpdateFormProps = {
   onSubmit: (values: UpdateFormValues) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
   updateModalOpen: boolean;
-  values: UpdateFormValues;
+  values: UpdateFormValues | undefined;
 };

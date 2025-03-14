@@ -1,6 +1,11 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Button, Form, Modal } from 'antd';
-import { ProFormText, ProFormDigit, ProForm } from '@ant-design/pro-components';
+import {
+  ProFormText,
+  ProFormDigit,
+  ProForm,
+  ProFormDateTimePicker,
+} from '@ant-design/pro-components';
 import { UpdateFormProps, UpdateFormValues } from './UpdateFormProps';
 
 export const UpdateForm: React.FC<UpdateFormProps> = ({
@@ -23,6 +28,17 @@ export const UpdateForm: React.FC<UpdateFormProps> = ({
     form.submit();
   }, [form]);
 
+  useEffect(() => {
+    if (values) {
+      form.setFieldsValue({
+        ...values,
+        date: values.date ? new Date(Number(values.date)) : undefined,
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [form, values]);
+
   return (
     <Modal
       destroyOnClose
@@ -30,9 +46,13 @@ export const UpdateForm: React.FC<UpdateFormProps> = ({
       open={props.updateModalOpen}
       onCancel={cancelHandler}
       footer={[
-        <Button key="delete" danger onClick={handleDelete}>
-          Delete
-        </Button>,
+        ...(values?.id
+          ? [
+              <Button key="delete" danger onClick={handleDelete}>
+                Delete
+              </Button>,
+            ]
+          : []),
         <Button key="cancel" onClick={cancelHandler}>
           Cancel
         </Button>,
@@ -41,7 +61,11 @@ export const UpdateForm: React.FC<UpdateFormProps> = ({
         </Button>,
       ]}
     >
-      <ProForm<UpdateFormValues> onFinish={onSubmit} initialValues={values} submitter={false} >
+      <ProForm<UpdateFormValues>
+        onFinish={onSubmit}
+        submitter={false}
+        form={form}
+      >
         <ProFormText
           name="location"
           label="Location"
@@ -50,9 +74,19 @@ export const UpdateForm: React.FC<UpdateFormProps> = ({
         <ProFormDigit
           name="magnitude"
           label="Magnitude"
-          rules={[{ required: true, message: 'Please enter the magnitude' }]}
+          rules={[
+            { required: true, message: 'Please enter the magnitude' },
+            {
+              validator: (_: unknown, value: number) =>
+                value > 0
+                  ? Promise.resolve()
+                  : Promise.reject(
+                      new Error('Magnitude must be a positive number')
+                    ),
+            },
+          ]}
         />
-        <ProFormText
+        <ProFormDateTimePicker
           name="date"
           label="Date"
           rules={[{ required: true, message: 'Please select the date' }]}

@@ -10,25 +10,15 @@ export const earthquakeResolvers = {
     earthquakes: async (_parent: unknown, args: GetEarthquakesInput) => {
       return earthquakeService.getAllEarthquakes(args);
     },
-    // earthquake: async (
-    //   _parent: unknown,
-    //   { id }: { id: number }
-    // ): Promise<Earthquake | null> => earthquakeService.getEarthquakeById(id),
   },
 
   Mutation: {
-    // addEarthquake: async (
-    //   _parent: unknown,
-    //   { location, magnitude, date }: Omit<Earthquake, 'id'>
-    // ): Promise<Earthquake> => {
-    //   const earthquake = {
-    //     location,
-    //     magnitude,
-    //     date: new Date(date),
-    //   };
-    //
-    //   return earthquakeService.addEarthquake(earthquake);
-    // },
+    addEarthquake: async (
+      _parent: unknown,
+      { data }: { data: EarthquakeData }
+    ): Promise<Earthquake> => {
+      return earthquakeService.addEarthquake(data);
+    },
     updateEarthquake: async (
       _parent: unknown,
       { id, data }: { id: number; data: EarthquakeData }

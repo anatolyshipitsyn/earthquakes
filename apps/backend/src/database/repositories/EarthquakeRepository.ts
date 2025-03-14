@@ -9,9 +9,6 @@ const EARTHQUAKE_NOT_FOUND_ERROR = (id: number) =>
 export class EarthquakeRepository {
   private repository = AppDataSource.getRepository(Earthquake);
 
-  // Fetch all earthquake records
-  findAll = () => this.repository.find();
-
   // Fetch a single earthquake by ID
   findById = (id: number) => this.repository.findOneBy({ id });
 

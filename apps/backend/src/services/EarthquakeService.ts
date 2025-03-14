@@ -25,19 +25,7 @@ export class EarthquakeService {
     return { data, success: true, total };
   }
 
-  async getEarthquakeById(id: number): Promise<Earthquake | null> {
-    return this.repository.findById(id);
-  }
-
-  async addEarthquake(
-    data: Omit<Earthquake, 'id' | 'createdAt' | 'updatedAt'>
-  ): Promise<Earthquake> {
-    return this.repository.create(data);
-  }
-
   async updateEarthquake(id: number, data: EarthquakeData) {
-    console.log('updateEarthquake service', { id, data });
-
     return this.repository.update(id, data);
   }
 

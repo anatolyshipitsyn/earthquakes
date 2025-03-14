@@ -41,7 +41,7 @@ export const UpdateForm: React.FC<UpdateFormProps> = ({
         </Button>,
       ]}
     >
-      <ProForm<UpdateFormValues> onFinish={onSubmit} initialValues={values}>
+      <ProForm<UpdateFormValues> onFinish={onSubmit} initialValues={values} submitter={false} >
         <ProFormText
           name="location"
           label="Location"
